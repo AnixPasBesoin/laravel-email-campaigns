@@ -1,0 +1,69 @@
+<?php
+
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
+
+class CreateEmailCampaignTables extends Migration
+{
+    public function up()
+    {
+        Schema::create('email_campaigns', function (Blueprint $table) {
+            $table->bigIncrements('id');
+            $table->string('name');
+            $table->string('status');
+
+            $table->longText('html')->nullable();
+            $table->longText('email_html')->nullable();
+            $table->longText('webview_html')->nullable();
+
+            $table->boolean('track_opens')->default(false);
+            $table->boolean('track_clicks')->default(false);
+
+            $table->nullableTimestamps();
+        });
+
+        Schema::create('campaign_links', function (Blueprint $table) {
+            $table->bigIncrements('id');
+            $table->uuid('uuid');
+            $table->unsignedBigInteger('email_campaign_id');
+            $table->string('original_link');
+            $table->nullableTimestamps();
+
+            $table
+                ->foreign('email_campaign_id')
+                ->references('id')->on('email_campaigns')
+                ->onDelete('cascade');
+        });
+
+        Schema::create('campaign_clicks', function (Blueprint $table) {
+            $table->bigIncrements('id');
+            $table->unsignedBigInteger('campaign_link_id');
+            $table->unsignedBigInteger('email_subscriber_id');
+            $table->nullableTimestamps();
+
+            $table
+                ->foreign('campaign_link_id')
+                ->references('id')->on('campaign_links')
+                ->onDelete('cascade');
+
+            $table
+                ->foreign('email_subscriber_id')
+                ->references('id')->on('email_subscribers')
+                ->onDelete('set null');
+        });
+
+        Schema::create('email_subscribers', function (Blueprint $table) {
+            $table->bigIncrements('id');
+            $table->string('email');
+            $table->string('email_campaign_id');
+            $table->uuid('uuid');
+            $table->nullableTimestamps();
+
+            $table
+                ->foreign('email_campaign_id')
+                ->references('id')->on('email_campaigns')
+                ->onDelete('cascade');
+        });
+    }
+}
