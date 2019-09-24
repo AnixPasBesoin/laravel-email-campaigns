@@ -1,11 +1,11 @@
 {
-    "name": "spatie/laravel-mass-mailing",
-    "description": "Send mass mailings using Laravel",
+    "name": "spatie/laravel-email-campaigns",
+    "description": "Send email campaigns using Laravel",
     "keywords": [
         "spatie",
         "laravel-mass-mailing"
     ],
-    "homepage": "https://github.com/spatie/laravel-mass-mailing",
+    "homepage": "https://github.com/spatie/laravel-email-campaigns",
     "license": "MIT",
     "authors": [
         {

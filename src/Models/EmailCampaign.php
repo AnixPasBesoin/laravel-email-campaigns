@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\EmailCampaigns\EmailList;
 use Spatie\EmailCampaigns\Enums\EmailCampaignStatus;
+use Spatie\EmailCampaigns\Jobs\SendCampaignJob;
 
 class EmailCampaign extends Model
 {
@@ -25,14 +26,35 @@ class EmailCampaign extends Model
         });
     }
 
-    public function send(EmailList $emailList)
-    {
-
-    }
-
     public function links(): HasMany
     {
         return $this->hasMany(CampaignLink::class);
     }
+
+    public function queue(): HasMany
+    {
+        return $this->hasMany(EmailCampaignSendQueueItem::class);
+    }
+
+    public function trackOpens()
+    {
+        $this->update(['track_opens' => true]);
+
+        return $this;
+    }
+
+    public function trackClicks()
+    {
+        $this->update(['track_clicks' => true]);
+
+        return $this;
+    }
+
+    public function sendTo(EmailList $emailList)
+    {
+        dispatch(new SendCampaignJob($this, $emailList));
+    }
+
+
 }
 
